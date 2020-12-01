@@ -1,16 +1,13 @@
 package serverspring.springreact.Entity;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Getter @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@ToString(of = {"title","desc","videoUrl"})
 public class Video {
 
     @Id
@@ -20,14 +17,28 @@ public class Video {
 
     private String title;
     private String desc;
-    private Date date;
+    private Date date = new Date();
+    private String videoUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
+    public Video(String title, String desc, String videoUrl) {
+        this.title = title;
+        this.desc = desc;
+        this.videoUrl = videoUrl;
+    }
+
     public void authorSettings(Member member){
         this.member = member;
         member.getVideos().add(this);
+    }
+
+    public Video(String title, String desc,String videoUrl,Member member){
+        this.title = title;
+        this.desc = desc;
+        this.videoUrl = videoUrl;
+        this.member = member;
     }
 }
