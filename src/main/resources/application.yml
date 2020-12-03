@@ -11,6 +11,25 @@ spring:
       hibernate:
         # show_sql: true
         format_sql: true
+  devtools:
+    livereload:
+      enabled: true
+
 logging.level:
   org.hibernate.SQL: debug
+
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIARFOJQ5EGHQEHM4XK
+      secretKey: 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
+    s3:
+      bucket: kijvideo
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+
+
 

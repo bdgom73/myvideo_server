@@ -7,6 +7,7 @@ import serverspring.springreact.Data.UserInfoTransferOnly;
 import serverspring.springreact.Entity.Member;
 import serverspring.springreact.Entity.Video;
 import serverspring.springreact.Repository.MemberRepository;
+import serverspring.springreact.Repository.VideoRepository;
 import serverspring.springreact.Service.JwtTokenProvider;
 import serverspring.springreact.Service.UserService;
 import serverspring.springreact.Service.VideoService;
@@ -29,6 +30,8 @@ public class UserController {
     private MemberRepository memberRepository;
     @Autowired
     private VideoService videoService;
+    @Autowired
+    private VideoRepository videoRepository;
 
     // USER JOIN
     @PostMapping("/user/signup")
@@ -55,8 +58,8 @@ public class UserController {
 
     // USER UPLOADS
     @PostMapping("/video/upload")
-    public void videoUpload(@RequestParam("file") MultipartFile video, @RequestParam("title") String title, @RequestParam("desc") String desc,@RequestHeader(value = "Cookies") String token) throws IOException {
-        videoService.uploadVideo(title,desc,video,token);
+    public String videoUpload(@RequestParam("file") MultipartFile video, @RequestParam("title") String title, @RequestParam("desc") String desc,@RequestHeader(value = "Cookies") String token) throws IOException {
+        return videoService.uploadVideo(title,desc,video,token);
     }
 
 

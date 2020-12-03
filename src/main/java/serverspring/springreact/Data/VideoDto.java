@@ -15,17 +15,22 @@ import java.util.Date;
 @Getter @Setter
 public class VideoDto{
 
+    private Long id;
     private String title;
     private String desc;
     private Date date = new Date();
     private String videoUrl;
-    private Member member;
 
-    public VideoDto(String title, String desc, String videoUrl,Member member){
+    private String name;
+
+
+    public VideoDto(Long id,String title, String desc, String videoUrl, Date date,Member member){
+        this.id = id;
         this.title = title;
         this.desc = desc;
         this.videoUrl = videoUrl;
-        this.member = member;
+        this.date = date;
+        this.name = member.getName();
     }
 
 }

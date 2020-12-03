@@ -8,6 +8,7 @@ import java.util.Date;
 @Entity
 @Getter @Setter
 @ToString(of = {"title","desc","videoUrl"})
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Video {
 
     @Id
