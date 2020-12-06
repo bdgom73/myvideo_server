@@ -2,6 +2,8 @@ package serverspring.springreact.Service;
 
 import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import serverspring.springreact.Data.VideoDto;
@@ -38,11 +40,15 @@ public class VideoService {
             String relativeUrl = baseFileUrl + randomStr;
             if(user.isPresent()){
                 video.transferTo(new File(FileUrl));
-                Video video1 = new Video(title, desc, relativeUrl, user.get());
-                video1.authorSettings(user.get());
-                Video save = videoRepository.save(video1);
-                System.out.println("save = " + save);
-                return save.getId().toString();
+                ClassPathResource resource = new ClassPathResource(absoluteUrl+"/"+randomStr+ext);
+                if(resource.getFilename().equals(randomStr+ext)){
+                    Video video1 = new Video(title, desc, relativeUrl, user.get());
+                    video1.authorSettings(user.get());
+                    Video save = videoRepository.save(video1);
+                    return save.getId().toString();
+                }
+                return "fail";
+
             }else {
                 return "fail";
             }

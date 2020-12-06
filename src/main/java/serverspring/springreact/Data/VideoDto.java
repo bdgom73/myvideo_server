@@ -33,4 +33,7 @@ public class VideoDto{
         this.name = member.getName();
     }
 
+    public VideoDto(Long id) {
+        this.id = id;
+    }
 }

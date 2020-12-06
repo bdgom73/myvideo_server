@@ -17,11 +17,13 @@ import java.util.List;
 @Getter @Setter
 public class UserInfoTransferOnly {
 
+    private Long id;
     private String email;
     private String name;
     private String avatar_url;
 
-    public UserInfoTransferOnly(String email, String name, String avatar_url){
+    public UserInfoTransferOnly(Long id,String email, String name, String avatar_url){
+        this.id = id;
         this.email = email;
         this.name = name;
         this.avatar_url = avatar_url;

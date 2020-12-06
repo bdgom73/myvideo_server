@@ -3,8 +3,7 @@ package serverspring.springreact.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.data.domain.Slice;
 import org.springframework.web.bind.annotation.*;
 import serverspring.springreact.Data.VideoDto;
 import serverspring.springreact.Entity.Video;
@@ -14,11 +13,8 @@ import serverspring.springreact.Service.JwtTokenProvider;
 import serverspring.springreact.Service.UserService;
 import serverspring.springreact.Service.VideoService;
 
-import java.awt.print.Pageable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
 
 @RestController
 public class VideoController {
@@ -46,4 +42,50 @@ public class VideoController {
         Page<VideoDto> videoDtos = videos.map(video -> new VideoDto(video.getId(),video.getTitle(),video.getDesc(),video.getVideoUrl(),video.getDate(),video.getMember()));
         return videoDtos;
     }
+
+    @PostMapping("/videos/update")
+    public void updateVideo(
+            @RequestParam(value = "id") String id,
+            @RequestParam(value = "title") String title,
+            @RequestParam(value = "desc") String desc,
+            HttpServletResponse response
+    ) throws Exception {
+        try{
+            Optional<Video> video = videoRepository.findById(Long.parseLong(id));
+            if(video.isPresent()){
+                video.get().setTitle(title);
+                video.get().setDesc(desc);
+                videoRepository.save(video.get());
+                response.setStatus(200);
+            }else{
+                response.setStatus(400);
+            }
+        }catch (Exception e){
+            response.setStatus(400);
+            throw new Exception("update Fail");
+        }
+    }
+
+    @PostMapping("/video/delete/{id}")
+    public void deleteVideo(
+            @RequestParam("id") String id,
+            HttpServletResponse response
+    ){
+        try {
+            Optional<Video> video = videoRepository.findById(Long.parseLong(id));
+            videoRepository.delete(video.get());
+            response.setStatus(200);
+        }catch (Exception e){
+            response.setStatus(400);
+        }
+    }
+    @PostMapping("/video/search/{query}")
+    public Slice<VideoDto> searchVideo(
+            @RequestParam("query") String query
+    ){
+        Slice<Video> video = videoRepository.findByTitleContaining(query);
+        Slice<VideoDto> map = video.map(m -> new VideoDto(m.getId(), m.getTitle(), m.getDesc(), m.getVideoUrl(), m.getDate(), m.getMember()));
+        return map;
+    }
+
 }

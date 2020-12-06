@@ -28,7 +28,7 @@ public class JwtTokenProvider {
 
     private String secretKey = "EV3oLcKbBU1kJmV14932H7zoh83Uzcu4";
 
-    private long tokenValidTime = 30 * 60 *1000L;
+    private long tokenValidTime = 24 * 60 * 60 * 1000L;
 
     @PostConstruct
     protected void init(){
@@ -58,12 +58,14 @@ public class JwtTokenProvider {
     public UserInfoTransferOnly tokenAuthenticationValueDelivery(Long id){
         Optional<Member> user = memberRepository.findById(id);
         UserInfoTransferOnly userInfoTransferOnly = new UserInfoTransferOnly(
+                user.get().getId(),
                 user.get().getEmail(),
                 user.get().getName(),
                 user.get().getAvatar_url()
         );
         return userInfoTransferOnly;
     }
+
 
     // 정해진 정보 전달
     public UserInfoTransferOnly getToken(String token){

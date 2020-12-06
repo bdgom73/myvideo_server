@@ -42,4 +42,9 @@ public class Video {
         this.videoUrl = videoUrl;
         this.member = member;
     }
+    public Video(String title, String desc){
+
+        this.title = title;
+        this.desc = desc;
+    }
 }
