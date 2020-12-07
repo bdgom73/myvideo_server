@@ -1,12 +1,16 @@
 package serverspring.springreact.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.multipart.MultipartFile;
 import serverspring.springreact.Entity.Member;
+import serverspring.springreact.Entity.Video;
 import serverspring.springreact.Repository.MemberRepository;
 
+import java.io.File;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,9 +23,42 @@ public class UserService {
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-
+    @Autowired
+    private VideoService videoService;
 
     BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+    String baseFileUrl = "http://localhost:8080/uploads/avatars/";
+    String absoluteUrl = "C:\\Users\\bdgom\\OneDrive\\desktop\\hello-spring\\spring-react\\src\\main\\resources\\static\\uploads\\avatars";
+    public void changeMe(MultipartFile avatar, String token){
+        try{
+            String ext = avatar.getOriginalFilename().substring(avatar.getOriginalFilename().lastIndexOf("."));
+            String randomStr = videoService.randomString()+ ext;
+            Long userId = jwtTokenProvider.getUserId(token);
+            Optional<Member> user = memberRepository.findById(userId);
+            String FileUrl = absoluteUrl+"/"+randomStr;
+            String relativeUrl = baseFileUrl + randomStr;
+            if(user.isPresent()){
+                avatar.transferTo(new File(FileUrl));
+                user.get().setAvatar_url(relativeUrl);
+                memberRepository.save(user.get());
+            }
+        }catch (Exception error){
+            System.out.println("error = " + error);
+        }
+    }
+
+    public void changeProfile(String name,String nickname,String token){
+        Long userId = jwtTokenProvider.getUserId(token);
+        Optional<Member> user = memberRepository.findById(userId);
+        if(user.isPresent()){
+            user.get().setName(name);
+            user.get().setNickname(nickname);
+            memberRepository.save(user.get());
+        }else{
+            new Exception("null..");
+        }
+    }
 
     private Boolean userSignUpPasswordValidation(String password1 , String password2){
         if(password1.equals(password2)){
@@ -76,7 +113,7 @@ public class UserService {
         return null;
     }
 
-    public void userPasswordChange(Map<String,String> password,String token){
+    public void userPasswordChange(Map<String,String> password,String token) throws Exception {
         Long id = jwtTokenProvider.getUserId(token);
         String prePassword = password.get("previousPassword");
         String newPassword1 = password.get("newPassword1");
@@ -84,11 +121,16 @@ public class UserService {
 
         Optional<Member> user = memberRepository.findById(id);
 
-        if (bCryptPasswordEncoder.matches(user.get().getPassword(),prePassword)) {
+        if (bCryptPasswordEncoder.matches(prePassword,user.get().getPassword())) {
             if (userSignUpPasswordValidation(newPassword1,newPassword2)) {
                 String newPassword = bCryptPasswordEncoder.encode(newPassword1);
                 user.get().setPassword(newPassword);
+                memberRepository.save(user.get());
+            }else{
+                throw new Exception("The two passwords are different.");
             }
+        }else{
+            throw new Exception("The password is incorrect.");
         }
 
     }

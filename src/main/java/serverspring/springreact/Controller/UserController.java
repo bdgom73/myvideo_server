@@ -1,6 +1,7 @@
 package serverspring.springreact.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,7 @@ import serverspring.springreact.Service.JwtTokenProvider;
 import serverspring.springreact.Service.UserService;
 import serverspring.springreact.Service.VideoService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -64,22 +66,45 @@ public class UserController {
             @RequestBody Map<String,String> password,
             @RequestHeader(value = "Cookies") String token,
             HttpServletResponse response
-    ){
-        try{
-            userService.userPasswordChange(password,token);
+    ) {
+        try {
+            userService.userPasswordChange(password, token);
             response.setStatus(200);
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setStatus(400);
         }
-
     }
-
     @PostMapping("/user/emailCheck")
     public Boolean emailRedundancyCheck(@RequestBody Map<String,String> user){
         String email = user.get("email");
         return userService.userSignUpEmailValidation(email);
     }
 
+    @PostMapping("/user/changeInfo")
+    public void changeInfo(
+            @RequestParam(value = "avatar") MultipartFile avatar,
+            @RequestHeader(value = "Cookies") String token,
+            HttpServletResponse response
+    ){
+        userService.changeMe(avatar,token);
+        response.setStatus(200);
+    }
+
+    @PostMapping("/user/changeProfile")
+    public void changeProfile(
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "nickname") String nickname,
+            @RequestHeader(value = "Cookies") String token,
+            HttpServletResponse response
+    ){
+        try{
+            userService.changeProfile(name,nickname,token);
+            response.setStatus(200);
+        }catch (Exception e){
+            System.out.println("e = " + e);
+            response.setStatus(400);
+        }
+    }
 
     // USER CHECK
     @GetMapping("/user/send/id")
